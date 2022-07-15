@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { createCubes, updateCubes } from '../../threejs/tests/07-camera';
+import { createCubes, updateCubes } from 'threejs/tests/squareAdmin';
+
 
 import './SquareAdmin.css';
 
@@ -26,7 +27,7 @@ function SquareAdmin() {
     });
   }
 
-  let handleUpdate = (name, value, idx) => {
+  let handleUpdate = (name:string, value:number, idx:number) => {
     let newState = {
       ...state,
       cubes: state.cubes.map((cube, i) => {
@@ -41,7 +42,7 @@ function SquareAdmin() {
     createCubes(newState.cubes)
   }
 
-  let handleRemove = (idx) => {
+  let handleRemove = (idx:number) => {
     let newState = {
       ...state,
       cubes: state.cubes.filter((_, i) => i !== idx)
@@ -52,16 +53,15 @@ function SquareAdmin() {
 
   return (
     <div className="SquareAdmin">
-      <p>{"Learning Three.js with React ❤️"}</p>
       <canvas className="webgl"></canvas>
-
+      <br /><br />
       {/* <form onSubmit={handleSubmint} className="form"> */}
       <form  className="form">
         <div className='cubesData'>
           { state.cubes.map(({ color, x, y, z }, idx) => (
             <Cube 
               key={idx} color={color} x={x} y={y} z={z} 
-              updateCube={(name, value) => handleUpdate(name, value, idx)}
+              updateCube={(name:string, value:number) => handleUpdate(name, value, idx)}
               removeCube={() => handleRemove(idx)}
             />
           ))}
@@ -75,8 +75,8 @@ function SquareAdmin() {
 }
 
 
-function Cube({ color, x, y, z, updateCube, removeCube}) {
-  let input = (name, type, value) => (
+function Cube({ color, x, y, z, updateCube, removeCube}:any) {
+  let input = (name:string, type:string, value:any) => (
     <label className='label'>
       <p>{name}</p>
       <input className={`input${type}`} type={type} name={name} value={value} onChange={(e) => {
@@ -95,6 +95,5 @@ function Cube({ color, x, y, z, updateCube, removeCube}) {
     </div>
   );
 }
-
 
 export default SquareAdmin;

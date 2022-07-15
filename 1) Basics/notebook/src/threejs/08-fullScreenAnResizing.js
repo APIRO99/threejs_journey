@@ -1,62 +1,79 @@
-import * as THREE from 'three'
-import { BoxGeometry, MeshBasicMaterial, Mesh, Group } from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+// import * as THREE from 'three'
+import {
+  BoxGeometry, MeshBasicMaterial, Mesh, Group,
+  PerspectiveCamera, Scene, WebGLRenderer, Clock
+} from 'three'
 
-let renderCubes = (meshes) => {
-  const canvas = document.querySelector('canvas.webgl')
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
-  const scene = new THREE.Scene()
-  const sizes = { width: 800, height: 600 };
-  _addCubes(scene, meshes);
-  const camera = _addCamera(scene, sizes);
-  
-  const controls = new OrbitControls(camera, canvas)
-  controls.enableDamping = true
-  _render(sizes, scene, camera);
+class MyScene {
+  constructor(meshes, width, height) {
+    this.meshes = meshes;
+    this.canvas = document.querySelector('canvas.webgl');
+    this.rotation = 0;
+    this.scene = new Scene()
+    this.sizes = { width, height };
+    this.cursor = { x: 0, y: 0 };
+    this.cubesGroup = this._addCubes(this.scene, meshes);
+    this.camera = this._addCamera(this.scene, this.sizes);
+    this.renderer = this._addRenderer(this.sizes);
+    this._render(this.scene, this.camera);
+
+    this.clock = new Clock();
+    this.controls = new OrbitControls(this.camera, this.canvas);
+    this.controls.enableDamping = true;
+    this.animate();
+  }
+
+  animate() {
+    this.controls.update()
+    this._render(this.scene, this.camera);
+    window.requestAnimationFrame(() => this.animate());
+  }
+
+  _addCubes = (scene, meshes) => {
+    let group = new Group();
+    scene.add(group);
+
+    meshes.forEach(({ color, pos }) => {
+      const geometry = new BoxGeometry(1, 1, 1);
+      const material = new MeshBasicMaterial({ color });
+      const cube = new Mesh(geometry, material);
+      cube.position.set(pos, 0, 0);
+      cube.rotation.set(this.rotation, this.rotation, this.rotation);
+      group.add(cube);
+    });
+    return group;
+  }
+
+  _addCamera = (scene, sizes) => {
+    let aspectRatio = sizes.width / sizes.height;
+    let camera = new PerspectiveCamera(75, aspectRatio, 0.1, 50);
+    camera.position.set(0, 0, 6);
+    camera.lookAt(this.cubesGroup.children[2].position);
+    scene.add(camera);
+    return camera;
+  }
+
+  _addRenderer = (sizes) => {
+    const renderer = new WebGLRenderer({ canvas: this.canvas })
+    renderer.setSize(sizes.width, sizes.height);
+    return renderer;
+  }
+
+  _render = (scene, camera) => {
+    this.renderer.render(scene, camera);
+  }
 }
 
-let _addCubes = (scene, meshes) => {
-  let group = new Group();
-  scene.add(group);
-
-  meshes.map(({rotation, color, pos}) => {
-    const geometry = new BoxGeometry(1, 1, 1);
-    const material = new MeshBasicMaterial({ color });
-    const cube = new Mesh(geometry, material);
-    cube.position.set(pos, 0, -3);
-    cube.rotation.set(rotation, rotation, rotation);
-    group.add(cube);
-    return cube;
-  });
-  return group;  
-}
-
-let _addCamera = (scene, sizes) => {
-  let camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height);
-  camera.position.z = 3;
-  scene.add(camera);
-  return camera;
-}
-
-let _render = (sizes, scene, camera) => {
-  const renderer = new THREE.WebGLRenderer({
-    canvas: document.querySelector('canvas.webgl')
-  })
-  renderer.setSize(sizes.width, sizes.height)
-  renderer.render(scene, camera);
-}
-
-let createCubes = () => {
-  let rotation = 0;
-  let interval = setInterval(() => {
-    renderCubes([
-      { rotation, color: 'blue' , pos: -2 },
-      { rotation, color: 'red'  , pos:  0 },
-      { rotation, color: 'green', pos:  2 },
-    ])
-    rotation += 0.01;
-  }, 10);
-  return () => clearInterval(interval);
+let createCubes = (width, height) => {
+  new MyScene([
+    { color: 'purple', pos: -4 },
+    { color: 'blue', pos: -2 },
+    { color: 'red', pos: 0 },
+    { color: 'green', pos: 2 },
+    { color: 'orange', pos: 4 },
+  ], width, height);
 };
 
-export { renderCubes, createCubes }
+export { createCubes }

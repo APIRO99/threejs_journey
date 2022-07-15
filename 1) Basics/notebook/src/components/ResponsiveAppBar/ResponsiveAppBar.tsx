@@ -7,16 +7,12 @@ import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
+import SchoolRoundedIcon from '@mui/icons-material/SchoolRounded';
 import Link from '@mui/material/Link';
 
 import { useNavigate } from "react-router-dom";
-
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 // Main Component ==================================================
 
@@ -26,14 +22,11 @@ interface IProps {
 
 const ResponsiveAppBar = ({ pages }: IProps) => {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   const navigate = useNavigate();
+  const name = "Notebook";
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
-  };
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
   };
 
   const handleCloseNavMenu = (event: React.MouseEvent<HTMLElement>, page:string) => {
@@ -41,19 +34,14 @@ const ResponsiveAppBar = ({ pages }: IProps) => {
     setAnchorElNav(null);
   };
 
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
-
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <DesktopIcon />
+          <DesktopIcon name={name}/>
           <MobileMenuPages data={{handleOpenNavMenu, anchorElNav, handleCloseNavMenu, pages}}/>
-          <MobileIcon />
+          <MobileIcon name={name}/>
           <DesktopPages data={{handleCloseNavMenu, pages}}/>
-          <UserData data={{handleOpenUserMenu, anchorElUser, handleCloseUserMenu}}/>
         </Toolbar>
       </Container>
     </AppBar>
@@ -61,12 +49,11 @@ const ResponsiveAppBar = ({ pages }: IProps) => {
 };
 
 // =================================================================
-
 // Aux Components ==================================================
 
-let DesktopIcon = () => (
+let DesktopIcon = ({name}:{name:string}) => (
   <>
-    <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+    <SchoolRoundedIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
     <Typography
       variant="h6"
       noWrap
@@ -82,7 +69,7 @@ let DesktopIcon = () => (
         textDecoration: 'none',
       }}
     >
-      LOGO
+      {name}
     </Typography>
   </>
 );
@@ -131,9 +118,9 @@ let MobileMenuPages = (props: any) => {
   )
 };
 
-let MobileIcon = () => (
+let MobileIcon = ({name}:{name:string}) => (
   <>
-    <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
+    <SchoolRoundedIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
       <Typography
         variant="h5"
         noWrap
@@ -150,7 +137,7 @@ let MobileIcon = () => (
           textDecoration: 'none',
         }}
       >
-        LOGO
+        {name}
       </Typography>
   </>
 );
@@ -173,43 +160,6 @@ let DesktopPages = (props: any) => {
     </>
   )
 };
-
-let UserData = (props: any) => {
-  let { handleOpenUserMenu, anchorElUser, handleCloseUserMenu } = props.data;
-  return (
-    <>
-      <Box sx={{ flexGrow: 0 }}>
-        <Tooltip title="Open settings">
-          <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-            <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-          </IconButton>
-        </Tooltip>
-        <Menu
-          sx={{ mt: '45px' }}
-          id="menu-appbar"
-          anchorEl={anchorElUser}
-          anchorOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
-          }}
-          keepMounted
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
-          }}
-          open={Boolean(anchorElUser)}
-          onClose={handleCloseUserMenu}
-        >
-          {settings.map((setting) => (
-            <MenuItem key={setting} onClick={handleCloseUserMenu}>
-              <Typography textAlign="center">{setting}</Typography>
-            </MenuItem>
-          ))}
-        </Menu>
-      </Box>
-    </>
-  )
-}
 
 // =================================================================
 
