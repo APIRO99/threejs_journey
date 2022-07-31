@@ -38,10 +38,10 @@ const ResponsiveAppBar = ({ pages }: IProps) => {
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <DesktopIcon name={name}/>
           <MobileMenuPages data={{handleOpenNavMenu, anchorElNav, handleCloseNavMenu, pages}}/>
+          {/* <DesktopIcon name={name}/> */}
           <MobileIcon name={name}/>
-          <DesktopPages data={{handleCloseNavMenu, pages}}/>
+          {/* <DesktopPages data={{handleCloseNavMenu, pages}}/> */}
         </Toolbar>
       </Container>
     </AppBar>
@@ -78,7 +78,7 @@ let MobileMenuPages = (props: any) => {
   let { handleOpenNavMenu, anchorElNav, handleCloseNavMenu, pages } = props.data;
   return (
     <>
-      <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+      <Box sx={{ flexGrow: 1, display: { xs: 'flex' } }}>
         <IconButton
           size="large"
           aria-label="account of current user"
@@ -104,7 +104,7 @@ let MobileMenuPages = (props: any) => {
           open={Boolean(anchorElNav)}
           onClose={handleCloseNavMenu}
           sx={{
-            display: { xs: 'block', md: 'none' },
+            display: { xs: 'block' },
           }}
         >
           {pages.map((page:string) => (
@@ -120,7 +120,7 @@ let MobileMenuPages = (props: any) => {
 
 let MobileIcon = ({name}:{name:string}) => (
   <>
-    <SchoolRoundedIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
+    <SchoolRoundedIcon sx={{ display: { xs: 'flex' }, mr: 1 }} />
       <Typography
         variant="h5"
         noWrap
@@ -128,7 +128,7 @@ let MobileIcon = ({name}:{name:string}) => (
         component={Link}
         sx={{
           mr: 2,
-          display: { xs: 'flex', md: 'none' },
+          display: { xs: 'flex' },
           flexGrow: 1,
           fontFamily: 'monospace',
           fontWeight: 700,

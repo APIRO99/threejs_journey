@@ -1,6 +1,6 @@
 import styles from './FullScreen.module.scss'
 
-import { createCubes } from 'threejs/08-fullScreenAnResizing';
+import { createCubes } from 'threejs/course/08-fullScreenAnResizing';
 import { useEffect, useRef } from 'react';
 
 const FullScreen = () => {
