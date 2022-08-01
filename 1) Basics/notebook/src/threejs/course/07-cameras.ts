@@ -1,5 +1,8 @@
 import { Isizes } from 'react-app-env';
 import * as THREE from 'three'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+
+
 
 class Scene {
   canvas:HTMLCanvasElement;
@@ -8,49 +11,85 @@ class Scene {
   clock:THREE.Clock = new THREE.Clock();
   
   scene!:THREE.Scene;
-  camera!:THREE.PerspectiveCamera;
+  camera!:THREE.Camera;
   renderer!:THREE.Renderer;
+  contorls!:OrbitControls;
 
-  constructor(canvas:HTMLCanvasElement) {
+  constructor(canvas:HTMLCanvasElement){
     this.canvas = canvas;
-    this.scene = this._createScene();
-    this.elements = this._createObjects();
-    this.camera = this._createCamera();
-    this.renderer = this._createRender();
+    this
+      ._createScene()
+      ._createCamera()
+      ._createRenderer()
+      .createObjects();
+
+    this._tick(this.clock.getDelta());
+  }
+
+  // Core Scene ====================================
+  _createScene():Scene {
+    this.scene = new THREE.Scene();
+    return this;
+  }
+
+  _createCamera():Scene {
+    const fov = 120;
+    const aspectRatio = this.sizes.width/ this.sizes.height;
+    let near = 0.1;
+    let far = 20;
+    this.camera = new THREE.PerspectiveCamera(fov, aspectRatio, near, far);
+    // this.camera = new THREE.OrthographicCamera(-5, 5, 5, -5, near, far);
+    this.scene.add(this.camera);
+    this.camera.position.set(0, 0, 2);
+    this.contorls = new OrbitControls(this.camera, this.canvas);
+    this.contorls.enableDamping = true;
+    return this;
+  }
+
+  _createRenderer():Scene {
+    this.renderer = new THREE.WebGLRenderer({canvas: this.canvas})
+    this.renderer.setSize(this.sizes.width, this.sizes.height);
+    this._render()
+    return this;
+  }
+
+  _render():void {
     this.renderer.render(this.scene, this.camera);
   }
 
-  // Core Scene =====================================
-  _createScene() {
-    return new THREE.Scene();
+  _tick(dt:number):void {
+    this.animate(dt);
+    this._render();
+    this.contorls.update();
+    window.requestAnimationFrame(this._tick.bind(this, this.clock.getDelta()));
   }
 
-  _createObjects() {
-    const geometry = new THREE.BoxGeometry(1,1,1);
-    const material = new THREE.MeshBasicMaterial({ color: 'red' })
-    const mesh = new THREE.Mesh(geometry, material);
-    this.scene.add(mesh);
-    return [mesh];
-  }
-
-  _createCamera() {
-    const fov = 75;
-    const aspectRatio = this.sizes.width/this.sizes.height;
-    const camera = new THREE.PerspectiveCamera(fov, aspectRatio); 
-    this.scene.add(camera);
-    camera.position.set(0, 0, 4);
-    return camera;
-  }
-
-  _createRender() {
-    const renderer = new THREE.WebGLRenderer({
-      canvas: this.canvas
-    })
-    renderer.setSize(this.sizes.width, this.sizes.height);
-    return renderer;
-  }
   // ===============================================
 
+  createObjects():void {
+    const cube1 = this.createCube('red');
+    this.scene.add(cube1);
+    this.elements.push(cube1);
+    this._render()
+  }
+
+  createCube(color:string):THREE.Mesh {
+    const geometry = new THREE.BoxGeometry(1,1,1);
+    const material = new THREE.MeshBasicMaterial({color});
+    return new THREE.Mesh(geometry, material);
+  }
+
+  animate(dt:number):void {
+    // this.elements[0].rotation.y += dt * Math.PI / 2;
+
+    // @ts-ignore
+    this.elements[0].material.color.setRGB(
+      Math.sin(this.clock.elapsedTime + Math.PI         ),
+      Math.sin(this.clock.elapsedTime + (Math.PI * (1/3))),
+      Math.sin(this.clock.elapsedTime + (Math.PI * (2/3))),
+    );
+    this.camera.lookAt(this.elements[0].position);
+  }
 }
 
-export default Scene;
+export default Scene
